@@ -1,0 +1,27 @@
+﻿@model CategoryCreateViewModel
+
+<div class="container">
+    <form asp-action="Create" enctype="multipart/form-data" class="p-4 shadow rounded bg-light" style="max-width: 600px; margin: auto;">
+        <h4 class="mb-4">Створення категорії</h4>
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" placeholder="Введіть назву категорії" required>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label"></label>
+            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Введіть опис категорії"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ImageFile" class="form-label"></label>
+            <input asp-for="ImageFile" type="file" class="form-control" accept="image/*">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Створити категорію</button>
+        <a asp-action="Index" class="btn btn-info">Скасувати</a>
+    </form>
+
+</div>
