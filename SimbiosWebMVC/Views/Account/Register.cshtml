@@ -1,0 +1,75 @@
+﻿@model RegisterViewModel
+
+@{
+    ViewData["Title"] = "Реєстрація";
+}
+
+<h1 class="text-center">@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="offset-md-3 col-md-6">
+        <form asp-action="Register" enctype="multipart/form-data">
+            <div class="mb-3 text-center">
+                <label asp-for="Image" class="d-block">
+                    <img id="defaultAvatar"
+                         src="/StandartImages/default.webp"
+                         alt="Аватар"
+                         class="rounded-circle border"
+                         style="width: 150px; height: 150px; object-fit: cover; cursor: pointer;" />
+
+                    <div id="croppedPreview"
+                         class="rounded-circle border d-none mx-auto"
+                         style="width: 150px; height: 150px; object-fit: cover; overflow: hidden; cursor: pointer"></div>
+                </label>
+
+                <input asp-for="Image"
+                       type="file"
+                       accept="image/*"
+                       class="d-none" />
+                <input type="hidden" id="croppedImageData" name="CroppedImage" />
+            </div>
+
+            @await Html.PartialAsync("_ImageCropper")
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="mb-3">
+                <label asp-for="FirstName" class="form-label"></label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="LastName" class="form-label"></label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="ConfirmPassword" class="form-label"></label>
+                <input asp-for="ConfirmPassword" class="form-control" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <input type="submit" value="Зареєструватися" class="btn btn-primary" />
+                <a asp-action="Index" asp-controller="Categories" class="btn btn-light">На головну</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script src="/js/cropper.min.js"></script>
+    <script src="/js/cropImageOnForm.js"></script>
+}

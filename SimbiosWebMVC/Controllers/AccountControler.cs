@@ -1,12 +1,16 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SimbiosWebMVC.Data.Entities.Identity;
+using SimbiosWebMVC.Interfaces;
 using SimbiosWebMVC.Models.Account;
+using System.Security.Claims;
 
 namespace SimbiosWebMVC.Controllers
 {
     public class AccountController(UserManager<UserEntity> userManager,
-        SignInManager<UserEntity> signInManager) : Controller
+        SignInManager<UserEntity> signInManager, IImageService imageService) : Controller
     {
         [HttpGet]
         public IActionResult Login()
@@ -26,12 +30,22 @@ namespace SimbiosWebMVC.Controllers
                 var res = await signInManager.PasswordSignInAsync(user, model.Password, false, false);
                 if (res.Succeeded)
                 {
-                    await signInManager.SignInAsync(user, isPersistent: false);
+                    var userClaims = await userManager.GetClaimsAsync(user);
+
+                    if (string.IsNullOrEmpty(userClaims.FirstOrDefault(c => c.Type == "Image")?.Value))
+                    {
+                        userClaims.Add(new Claim("Image", user.Image ?? ""));
+                    }
+
+                    var claimsIdentity = new ClaimsIdentity(userClaims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                    await signInManager.SignInWithClaimsAsync(user, false, claimsIdentity.Claims);
+
                     return Redirect("/");
                 }
-
             }
-            ModelState.AddModelError("", "Дані вказано не вірно!");
+
+            ModelState.AddModelError("", "Невірний логін або пароль.");
             return View(model);
         }
 
@@ -40,6 +54,48 @@ namespace SimbiosWebMVC.Controllers
         {
             await signInManager.SignOutAsync();
             return Redirect("/");
+        }
+
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+            var user = new UserEntity
+            {
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Email = model.Email,
+                UserName = model.Email,
+                Image = await imageService.SaveImageAsync(model.Image) ?? null
+            };
+            var res = await userManager.CreateAsync(user, model.Password);
+            if (res.Succeeded)
+            {
+                var userClaims = await userManager.GetClaimsAsync(user);
+
+                if (string.IsNullOrEmpty(userClaims.FirstOrDefault(c => c.Type == "Image")?.Value))
+                {
+                    userClaims.Add(new Claim("Image", user.Image ?? ""));
+                }
+
+                var claimsIdentity = new ClaimsIdentity(userClaims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                await signInManager.SignInWithClaimsAsync(user, false, claimsIdentity.Claims);
+
+                return Redirect("/");
+            }
+            foreach (var error in res.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+            return View(model);
         }
     }
 }
