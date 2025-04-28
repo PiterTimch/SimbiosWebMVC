@@ -102,7 +102,25 @@ namespace SimbiosWebMVC.Controllers
         [Authorize]
         public IActionResult AccessDenied(string returnUrl)
         {
-            return RedirectToAction("Login", "Account");
+            return RedirectToAction("Login");
+        }
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult Profile()
+        {
+            var user = userManager.Users.FirstOrDefault(u => u.Email == User.Identity.Name);
+            if (user == null)
+                return RedirectToAction("Login");
+
+            var model = new ProfileViewModel()
+            {
+                FullName = $"{user.FirstName} {user.LastName}",
+                Email = user.Email,
+                Image = user.Image ?? ""
+            };
+
+            return View(model);
         }
     }
 }
