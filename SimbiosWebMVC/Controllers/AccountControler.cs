@@ -6,6 +6,7 @@ using SimbiosWebMVC.Data.Entities.Identity;
 using SimbiosWebMVC.Interfaces;
 using SimbiosWebMVC.Models.Account;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SimbiosWebMVC.Controllers
 {
@@ -96,6 +97,12 @@ namespace SimbiosWebMVC.Controllers
                 ModelState.AddModelError("", error.Description);
             }
             return View(model);
+        }
+
+        [Authorize]
+        public IActionResult AccessDenied(string returnUrl)
+        {
+            return RedirectToAction("Login", "Account");
         }
     }
 }
