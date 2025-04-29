@@ -7,11 +7,12 @@ using SimbiosWebMVC.Interfaces;
 using SimbiosWebMVC.Models.Account;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using AutoMapper;
 
 namespace SimbiosWebMVC.Controllers
 {
     public class AccountController(UserManager<UserEntity> userManager,
-        SignInManager<UserEntity> signInManager, IImageService imageService) : Controller
+        SignInManager<UserEntity> signInManager, IImageService imageService, IMapper mapper) : Controller
     {
         [HttpGet]
         public IActionResult Login()
@@ -68,14 +69,18 @@ namespace SimbiosWebMVC.Controllers
         {
             if (!ModelState.IsValid)
                 return View(model);
-            var user = new UserEntity
-            {
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Email = model.Email,
-                UserName = model.Email,
-                Image = await imageService.SaveImageAsync(model.Image) ?? null
-            };
+
+            var user = mapper.Map<UserEntity>(model);
+            user.Image = await imageService.SaveImageAsync(model.Image) ?? null;
+            //var user = new UserEntity
+            //{
+            //    FirstName = model.FirstName,
+            //    LastName = model.LastName,
+            //    Email = model.Email,
+            //    UserName = model.Email,
+            //    Image = await imageService.SaveImageAsync(model.Image) ?? null
+            //};
+
             var res = await userManager.CreateAsync(user, model.Password);
             if (res.Succeeded)
             {
