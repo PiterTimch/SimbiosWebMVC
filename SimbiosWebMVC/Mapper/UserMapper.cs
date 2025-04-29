@@ -1,0 +1,17 @@
+﻿using AutoMapper;
+using SimbiosWebMVC.Data.Entities;
+using SimbiosWebMVC.Data.Entities.Identity;
+using SimbiosWebMVC.Models.Account;
+using SimbiosWebMVC.Models.Category;
+
+namespace SimbiosWebMVC.Mapper
+{
+    public class UserMapper : Profile
+    {
+        public UserMapper()
+        {
+            CreateMap<UserEntity, UserLinkViewModel>()
+                .ForMember(x => x.Name, opt => opt.MapFrom(x => $"{x.LastName} {x.FirstName}"));
+        }
+    }
+}
