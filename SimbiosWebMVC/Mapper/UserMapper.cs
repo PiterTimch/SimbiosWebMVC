@@ -13,6 +13,9 @@ namespace SimbiosWebMVC.Mapper
             CreateMap<UserEntity, UserLinkViewModel>()
                 .ForMember(x => x.Name, opt => opt.MapFrom(x => $"{x.LastName} {x.FirstName}"));
 
+            CreateMap<UserEntity, ProfileViewModel>()
+                .ForMember(x => x.FullName, opt => opt.MapFrom(x => $"{x.LastName} {x.FirstName}"));
+
             CreateMap<RegisterViewModel, UserEntity>()
                 .ForMember(x => x.Image, opt => opt.Ignore())
                 .ForMember(x => x.UserName, opt => opt.MapFrom(x => x.Email));

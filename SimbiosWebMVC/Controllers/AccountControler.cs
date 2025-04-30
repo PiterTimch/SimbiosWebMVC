@@ -32,16 +32,7 @@ namespace SimbiosWebMVC.Controllers
                 var res = await signInManager.PasswordSignInAsync(user, model.Password, false, false);
                 if (res.Succeeded)
                 {
-                    var userClaims = await userManager.GetClaimsAsync(user);
-
-                    if (string.IsNullOrEmpty(userClaims.FirstOrDefault(c => c.Type == "Image")?.Value))
-                    {
-                        userClaims.Add(new Claim("Image", user.Image ?? ""));
-                    }
-
-                    var claimsIdentity = new ClaimsIdentity(userClaims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-                    await signInManager.SignInWithClaimsAsync(user, false, claimsIdentity.Claims);
+                    await signInManager.SignInAsync(user, false);
 
                     return Redirect("/");
                 }
@@ -72,28 +63,11 @@ namespace SimbiosWebMVC.Controllers
 
             var user = mapper.Map<UserEntity>(model);
             user.Image = await imageService.SaveImageAsync(model.Image) ?? null;
-            //var user = new UserEntity
-            //{
-            //    FirstName = model.FirstName,
-            //    LastName = model.LastName,
-            //    Email = model.Email,
-            //    UserName = model.Email,
-            //    Image = await imageService.SaveImageAsync(model.Image) ?? null
-            //};
 
             var res = await userManager.CreateAsync(user, model.Password);
             if (res.Succeeded)
             {
-                var userClaims = await userManager.GetClaimsAsync(user);
-
-                if (string.IsNullOrEmpty(userClaims.FirstOrDefault(c => c.Type == "Image")?.Value))
-                {
-                    userClaims.Add(new Claim("Image", user.Image ?? ""));
-                }
-
-                var claimsIdentity = new ClaimsIdentity(userClaims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-                await signInManager.SignInWithClaimsAsync(user, false, claimsIdentity.Claims);
+                await signInManager.SignInAsync(user, false);
 
                 return Redirect("/");
             }
@@ -114,18 +88,7 @@ namespace SimbiosWebMVC.Controllers
         [HttpGet]
         public IActionResult Profile()
         {
-            var user = userManager.Users.FirstOrDefault(u => u.Email == User.Identity.Name);
-            if (user == null)
-                return RedirectToAction("Login");
-
-            var model = new ProfileViewModel()
-            {
-                FullName = $"{user.FirstName} {user.LastName}",
-                Email = user.Email,
-                Image = user.Image ?? ""
-            };
-
-            return View(model);
+            return View();
         }
     }
 }
