@@ -38,6 +38,13 @@
                         <ul class="navbar-nav">
                             @await Component.InvokeAsync("UserLink")
 
+							@if (User.IsInRole(Roles.Admin))
+							{
+								<li class="nav-item">
+                                    <a class="nav-link" asp-area="Admin" asp-action="Index" asp-controller="Home">Адмінка</a>
+								</li>
+							}
+
                             <li class="nav-item">
                                 @using (Html.BeginForm("Logout", "Account", FormMethod.Post))
                                 {
