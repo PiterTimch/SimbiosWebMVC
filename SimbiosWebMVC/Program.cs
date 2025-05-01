@@ -45,7 +45,7 @@ app.MapStaticAssets();
 app.MapAreaControllerRoute(
     name: "AdminArea",
     areaName: "Admin",
-    pattern: "admin/{controller=Dashboards}/{action=Index}/{id?}");
+    pattern: "admin/{controller=User}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",
