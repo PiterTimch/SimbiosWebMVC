@@ -1,0 +1,15 @@
+﻿using AutoMapper;
+using SimbiosWebMVC.Areas.Admin.Models.User;
+using SimbiosWebMVC.Areas.Admin.Models.ViewComponentModels;
+using SimbiosWebMVC.Data.Entities.Identity;
+
+namespace SimbiosWebMVC.Areas.Admin.Mapper
+{
+    public class UserMapper : Profile
+    {
+        public UserMapper()
+        {
+            CreateMap<UserEntity, UserItemViewModel>();
+        }
+    }
+}

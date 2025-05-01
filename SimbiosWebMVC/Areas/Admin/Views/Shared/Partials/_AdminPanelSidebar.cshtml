@@ -1,11 +1,5 @@
 ﻿<div class="col-md-3 col-lg-2 bg-light border-end vh-100 p-3">
-    <div class="text-center mb-4">
-        <img src="/StandartImages/default.webp"
-             class="rounded-circle border border-primary mb-2"
-             style="width: 80px; height: 80px; object-fit: cover;" />
-        <h6 class="mb-0">Адмін</h6>
-        <small class="text-muted">Його емейл</small>
-    </div>
+	@await Component.InvokeAsync("AdminPreview")
 
     <div class="accordion" id="adminMenu">
         <div class="accordion-item">
@@ -17,7 +11,7 @@
             <div id="collapseUsers" class="accordion-collapse collapse" data-bs-parent="#adminMenu">
                 <div class="accordion-body ps-3">
                     <ul class="nav flex-column">
-                        <li class="nav-item"><a class="nav-link" href="#">Перегляд</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-action="AllUsers" asp-controller="User" asp-area="Admin">Перегляд</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">Додати</a></li>
                     </ul>
                 </div>

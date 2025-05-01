@@ -1,0 +1,9 @@
+﻿@model AdminPreviewModel
+
+<div class="text-center mb-4">
+    <img src="@(string.IsNullOrEmpty(Model.Image) ? "/StandartImages/default.webp" : $"/images/400_{Model.Image}")"
+         class="rounded-circle border border-primary mb-2"
+         style="width: 80px; height: 80px; object-fit: cover;" />
+    <h6 class="mb-0">@Model.FullName</h6>
+    <small class="text-muted">@Model.Email</small>
+</div>
