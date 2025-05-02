@@ -14,9 +14,15 @@ namespace SimbiosWebMVC.Areas.Admin.Controllers
     {
         public async Task<IActionResult> Index()
         {
+
             var model = await userManager.Users
                 .ProjectTo<UserItemViewModel>(mapper.ConfigurationProvider)
                 .ToListAsync();
+
+            model.ForEach(user =>
+            {
+                user.Roles = userManager.GetRolesAsync((userManager.FindByEmailAsync(user.Email).Result)).Result.ToList();
+            });
 
             return View(model);
         }
