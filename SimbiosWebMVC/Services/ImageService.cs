@@ -40,6 +40,13 @@ namespace SimbiosWebMVC.Services
             return imageName;
         }
 
+        public async Task<string> SaveImageFromUrlAsync(string imageUrl)
+        {
+            using var httpClient = new HttpClient();
+            var imageBytes = await httpClient.GetByteArrayAsync(imageUrl);
+            return await SaveImageAsync(imageBytes);
+        }
+
         private async Task<string> SaveImageAsync(byte[] bytes)
         {
             string imageName = $"{Path.GetRandomFileName()}.webp";
