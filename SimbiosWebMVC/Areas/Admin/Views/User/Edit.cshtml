@@ -1,0 +1,81 @@
+﻿@model UserEditViewModel
+
+@{
+    ViewData["Title"] = "Account settings - Account";
+}
+
+@section PageScripts {
+    <script src="~/admin/js/pages-account-settings-account.js"></script>
+}
+
+@* ************** Content ************** *@
+<div class="row">
+    <div class="col-md-12">
+        <div class="nav-align-top">
+            <ul class="nav nav-pills flex-column flex-md-row mb-6 gap-2 gap-lg-0">
+                <li class="nav-item"><a class="nav-link active" href="javascript:void(0);"><i class="ri-group-line me-1_5"></i>Account</a></li>
+                <li class="nav-item"><a class="nav-link" href="AccountSettingsNotifications"><i class="ri-notification-4-line me-1_5"></i>Notifications</a></li>
+                <li class="nav-item"><a class="nav-link" href="AccountSettingsConnections"><i class="ri-link-m me-1_5"></i>Connections</a></li>
+            </ul>
+        </div>
+        <div class="card mb-6">
+            <!-- Account -->
+            <div class="card-body pt-0">
+                <form id="formAccountSettings" asp-action="Edit" enctype="multipart/form-data">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start align-items-sm-center gap-6">
+                            <img src="@Model.ImageName" alt="user-avatar"
+                                 class="d-block w-px-100 h-px-100 rounded object-fit-cover" id="uploadedAvatar" />
+                            <div class="button-wrapper">
+                                <label asp-for="ImageFile" class="btn btn-sm btn-primary me-3 mb-4" tabindex="0">
+                                    <span class="d-none d-sm-block">Upload new photo</span>
+                                    <i class="ri-upload-2-line d-block d-sm-none"></i>
+                                    <input type="file" asp-for="ImageFile" class="account-file-input" hidden
+                                           accept="image/png, image/jpeg"
+                                           onchange="document.getElementById('uploadedAvatar').src = window.URL.createObjectURL(this.files[0])" />
+                                </label>
+
+                                <div>Allowed JPG, GIF or PNG. Max size of 800K</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-1 g-5">
+                        <div class="col-md-6">
+                            <div class="form-floating form-floating-outline">
+                                <input class="form-control" asp-for="FirstName" autofocus />
+                                <label asp-for="FirstName"></label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating form-floating-outline">
+                                <input class="form-control" asp-for="LastName" />
+                                <label asp-for="LastName"></label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating form-floating-outline">
+                                <input class="form-control" asp-for="Email" placeholder="john.doe&#64;example.com" />
+                                <label asp-for="Email">E-mail</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating form-floating-outline">
+                                <select asp-for="Roles" multiple class="select2 form-select">
+                                    <option value="Admin" selected="@(Model.Roles.Contains("Admin") ? "selected" : null)">Admin</option>
+                                    <option value="User" selected="@(Model.Roles.Contains("User") ? "selected" : null)">User</option>
+                                </select>
+                                <label asp-for="Roles">Country</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <button type="submit" class="btn btn-primary me-3">Save changes</button>
+                        <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                    </div>
+                </form>
+            </div>
+            <!-- /Account -->
+        </div>
+    </div>
+</div>
