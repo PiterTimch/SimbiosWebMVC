@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using SimbiosWebMVC.Areas.Admin.Models.Products;
+using SimbiosWebMVC.Areas.Admin.Models.Product;
 using SimbiosWebMVC.Data.Entities;
 
 namespace SimbiosWebMVC.Areas.Admin.Mapper

@@ -1,15 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using SimbiosWebMVC.Areas.Admin.Models.Products;
 using SimbiosWebMVC.Data;
+using SimbiosWebMVC.Models.Product;
 
 namespace SimbiosWebMVC.Controllers
 {
-    [Area("Admin")]
     public class ProductsController(AppDbContext context,
     IMapper mapper) : Controller
     {
-
         public IActionResult Index()
         {
             ViewBag.Title = "Продукти";
