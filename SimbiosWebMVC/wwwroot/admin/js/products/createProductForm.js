@@ -1,5 +1,10 @@
 ﻿document.addEventListener('DOMContentLoaded', () => {
-    // Ініціалізація TinyMCE
+    const form = document.getElementById('createProductForm');
+
+    form.addEventListener('submit', () => {
+        savePhotos();
+    });
+
     tinymce.init({
         selector: '#description',
         plugins: 'advlist autolink link image lists charmap preview anchor pagebreak searchreplace wordcount code fullscreen insertdatetime media table help',
@@ -7,13 +12,11 @@
         menubar: 'file edit view insert format tools table help'
     });
 
-    // Ініціалізація Sortable
     new Sortable(document.getElementById('imageList'), {
         animation: 150,
         ghostClass: 'opacity-50'
     });
 
-    // Зображення preview
     const fileInput = document.getElementById('fileInput');
     const imageList = document.getElementById('imageList');
 
@@ -21,7 +24,7 @@
 
     function handleFiles(event) {
         const files = event.target.files;
-        imageList.innerHTML = ''; // очистка попередніх preview
+        imageList.innerHTML = '';
 
         Array.from(files).forEach(file => {
             if (!file.type.startsWith('image/')) return;
@@ -40,6 +43,20 @@
                 imageList.appendChild(col);
             };
             reader.readAsDataURL(file);
+        });
+        
+    }
+
+    function savePhotos () {
+        form.querySelectorAll('input[name="Images"]').forEach(el => el.remove());
+
+        const imgs = imageList.querySelectorAll('img');
+        imgs.forEach(img => {
+            const hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = 'Images';
+            hidden.value = img.src;
+            form.appendChild(hidden);
         });
     }
 });

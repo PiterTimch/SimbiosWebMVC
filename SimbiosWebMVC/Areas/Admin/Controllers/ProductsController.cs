@@ -23,7 +23,15 @@ namespace SimbiosWebMVC.Areas.Admin.Controllers
         public IActionResult Create()
         {
             ViewBag.Title = "Створити продукт";
+            ViewBag.Categories = context.Categories.ToList();
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult Create(CreateProductViewModel model)
+        {
+            ViewBag.Title = "Створити продукт";
+            return View(model);
         }
     }
 }
