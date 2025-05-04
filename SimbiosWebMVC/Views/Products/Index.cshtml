@@ -17,39 +17,6 @@
                         <p class="card-text">@item.Description</p>
                     </div>
 
-                    <div class="position-absolute top-0 end-2 pt-3 ps-3 delete-btn">
-                        <a asp-action="Edit" asp-route-id="@item.Id" asp class="btn btn-success">
-                            <i class="fas fa-pencil"></i>
-                        </a>
-                    </div>
-
-                    <div class="position-absolute top-0 end-0 p-3 delete-btn">
-                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#@modalId">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-
-
-            <div class="modal fade" id="@modalId" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="label_@item.Id">Підтвердження видалення</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            Ви дійсно хочете видалити категорію <strong>@item.Name</strong>?
-                        </div>
-                        <div class="modal-footer">
-                            <form asp-action="Delete">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
-                                <button type="submit" class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Видалити</button>
-                            </form>
-                        </div>
-                    </div>
                 </div>
             </div>
         }

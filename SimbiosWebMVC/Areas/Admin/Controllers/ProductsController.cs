@@ -3,14 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using SimbiosWebMVC.Areas.Admin.Models.Products;
 using SimbiosWebMVC.Data;
 
-namespace SimbiosWebMVC.Controllers
+namespace SimbiosWebMVC.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    public class ProductsController(AppDbContext context,
-    IMapper mapper) : Controller
+    public class ProductsController : Controller
     {
-
-        public IActionResult Index()
+        public IActionResult Index(AppDbContext context,
+        IMapper mapper)
         {
             ViewBag.Title = "Продукти";
             var model = mapper.ProjectTo<ProductItemViewModel>(context.Products).ToList();
