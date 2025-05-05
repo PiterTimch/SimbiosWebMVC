@@ -47,12 +47,12 @@
 				<div>Продукти</div>
 			</a>
 			<ul class="menu-sub">
-				<li class='menu-item@(currentPage == "admin/Products" ? " active" : "")'>
+				<li class='menu-item@(currentPage == "/admin/Products" ? " active" : "")'>
 					<a asp-controller="Products" asp-action="Index" class="menu-link">
 						<div>Перегляд</div>
 					</a>
 				</li>
-				<li class='menu-item@(currentPage.ToLower() == "admin/products/create" ? " active" : "")'>
+				<li class='menu-item@(currentPage == "/admin/Products/Create" ? " active" : "")'>
 					<a asp-controller="Products" asp-action="Create" class="menu-link">
 						<div>Додати</div>
 					</a>
