@@ -24,7 +24,6 @@
 
     function handleFiles(event) {
         const files = event.target.files;
-        imageList.innerHTML = '';
 
         Array.from(files).forEach(file => {
             if (!file.type.startsWith('image/')) return;
@@ -34,17 +33,31 @@
                 const col = document.createElement('div');
                 col.className = 'col';
 
+                const wrapper = document.createElement('div');
+                wrapper.className = 'position-relative';
+
                 const img = document.createElement('img');
                 img.src = e.target.result;
                 img.className = 'img-fluid rounded border';
+                img.style.height = '100px';
+                img.style.objectFit = 'cover';
                 img.alt = 'Preview';
 
-                col.appendChild(img);
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'btn btn-sm btn-danger position-absolute top-0 end-0 m-1 rounded-circle';
+                removeBtn.innerHTML = '&times;';
+                removeBtn.addEventListener('click', () => col.remove());
+
+                wrapper.appendChild(img);
+                wrapper.appendChild(removeBtn);
+                col.appendChild(wrapper);
                 imageList.appendChild(col);
             };
             reader.readAsDataURL(file);
         });
-        
+
+        fileInput.value = '';
     }
 
     function savePhotos() {
