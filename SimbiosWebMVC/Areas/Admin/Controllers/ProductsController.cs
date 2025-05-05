@@ -1,16 +1,20 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SimbiosWebMVC.Areas.Admin.Models.Product;
 using SimbiosWebMVC.Constants;
 using SimbiosWebMVC.Data;
+using SimbiosWebMVC.Data.Entities;
+using SimbiosWebMVC.Interfaces;
+using System.Threading.Tasks;
 
 namespace SimbiosWebMVC.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize(Roles = Roles.Admin)]
     public class ProductsController(AppDbContext context,
-        IMapper mapper) : Controller
+        IMapper mapper, IImageService imageService) : Controller
     {
         public IActionResult Index()
         {
@@ -28,10 +32,35 @@ namespace SimbiosWebMVC.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(CreateProductViewModel model)
+        public async Task<IActionResult> Create(CreateProductViewModel model)
         {
-            ViewBag.Title = "Створити продукт";
-            return View(model);
+            var existingProduct = await context.Products.SingleOrDefaultAsync(x => x.Name == model.Name);
+
+            if (existingProduct != null)
+            {
+                ModelState.AddModelError("Name", "Такий продукт вже є!!!");
+                return View(model);
+            }
+
+            var productEntity = mapper.Map<ProductEntity>(model);
+
+            productEntity.Category = await context.Categories
+                .SingleOrDefaultAsync(x => x.Name == model.CategoryName);
+
+            var savedImages = await Task.WhenAll(
+                model.Images.Select(async image => new ProductImageEntity
+                {
+                    Name = await imageService.SaveImageFromBase64Async(image.Name),
+                    Priotity = image.Priority
+                })
+            );
+
+            productEntity.ProductImages = savedImages.ToList();
+
+            context.Products.Add(productEntity);
+            await context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

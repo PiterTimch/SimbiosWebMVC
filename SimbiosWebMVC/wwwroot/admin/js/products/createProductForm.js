@@ -47,16 +47,23 @@
         
     }
 
-    function savePhotos () {
-        form.querySelectorAll('input[name="Images"]').forEach(el => el.remove());
+    function savePhotos() {
+        form.querySelectorAll('input[name^="Images"]').forEach(el => el.remove());
 
         const imgs = imageList.querySelectorAll('img');
-        imgs.forEach(img => {
-            const hidden = document.createElement('input');
-            hidden.type = 'hidden';
-            hidden.name = 'Images';
-            hidden.value = img.src;
-            form.appendChild(hidden);
+
+        imgs.forEach((img, index) => {
+            const hiddenName = document.createElement('input');
+            hiddenName.type = 'hidden';
+            hiddenName.name = `Images[${index}].Name`;
+            hiddenName.value = img.src;
+            form.appendChild(hiddenName);
+
+            const hiddenPriority = document.createElement('input');
+            hiddenPriority.type = 'hidden';
+            hiddenPriority.name = `Images[${index}].Priority`;
+            hiddenPriority.value = index;
+            form.appendChild(hiddenPriority);
         });
     }
 });

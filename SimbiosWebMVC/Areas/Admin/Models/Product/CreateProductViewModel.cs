@@ -19,6 +19,6 @@ namespace SimbiosWebMVC.Areas.Admin.Models.Product
 
         [Required(ErrorMessage = "Обов'язкове поле")]
         [Display(Name = "Зображення")]
-        public List<string> Images { get; set; } = new();
+        public List<CreateProductImageViewModel> Images { get; set; } = new();
     }
 }
