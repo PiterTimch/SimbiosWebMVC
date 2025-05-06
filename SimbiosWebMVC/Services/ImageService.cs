@@ -49,13 +49,14 @@ namespace SimbiosWebMVC.Services
 
         public async Task<string> SaveImageFromBase64Async(string input)
         {
-            byte[] imageBytes;
-            var base64Data = input.Substring(input.IndexOf(",") + 1);
-            imageBytes = Convert.FromBase64String(base64Data);
-            
+            var base64Data = input.Contains(",")
+               ? input.Substring(input.IndexOf(",") + 1)
+               : input;
+
+            byte[] imageBytes = Convert.FromBase64String(base64Data);
+
             return await SaveImageAsync(imageBytes);
         }
-
 
         private async Task<string> SaveImageAsync(byte[] bytes)
         {
