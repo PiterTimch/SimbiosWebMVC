@@ -180,23 +180,23 @@ namespace SimbiosWebMVC.Data
                 }
             }
 
-            webApplication.Use(async (context, next) =>
-            {
-                var host = context.Request.Host;
-                Message msg = new Message
-                {
-                    Body = $"Додаток запущено {DateTime.Now}",
-                    Subject = $"Запуск із {host}",
-                    To = "wevabiv500@exitings.com"
-                };
+            //webApplication.Use(async (context, next) =>
+            //{
+            //    var host = context.Request.Host;
+            //    Message msg = new Message
+            //    {
+            //        Body = $"Додаток запущено {DateTime.Now}",
+            //        Subject = $"Запуск із {host}",
+            //        To = "wevabiv500@exitings.com"
+            //    };
 
-                Console.WriteLine($"Запуск із {host}");
+            //    Console.WriteLine($"Запуск із {host}");
 
-                await smtpService.SendEmailAsync(msg);
+            //    await smtpService.SendEmailAsync(msg);
 
-                await next.Invoke();
-            }
-            );
+            //    await next.Invoke();
+            //}
+            //);
         }
     }
 }

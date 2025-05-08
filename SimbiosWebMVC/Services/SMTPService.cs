@@ -9,7 +9,7 @@ namespace SimbiosWebMVC.Services
     {
         public async Task<bool> SendEmailAsync(Message message)
         {
-            var body = new TextPart("plain")
+            var body = new TextPart("html")
             {
                 Text = message.Body
             };
