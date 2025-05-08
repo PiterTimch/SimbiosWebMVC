@@ -27,6 +27,7 @@ builder.Services.AddIdentity<UserEntity, RoleEntity>(options =>
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<ISMTPService, SMTPService>();
 
 builder.Services.AddControllersWithViews();
 
