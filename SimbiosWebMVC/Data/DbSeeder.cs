@@ -7,6 +7,8 @@ using SimbiosWebMVC.Models.Seeder;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using SimbiosWebMVC.Interfaces;
+using SimbiosWebMVC.SMTP;
+using System.Data;
 
 namespace SimbiosWebMVC.Data
 {
@@ -21,6 +23,7 @@ namespace SimbiosWebMVC.Data
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserEntity>>();
 
             var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
+            var smtpService = scope.ServiceProvider.GetRequiredService<ISMTPService>();
 
             context.Database.Migrate();
 
@@ -176,6 +179,24 @@ namespace SimbiosWebMVC.Data
                     Console.WriteLine("Products.json file not found");
                 }
             }
+
+            webApplication.Use(async (context, next) =>
+            {
+                var host = context.Request.Host;
+                Message msg = new Message
+                {
+                    Body = $"Додаток запущено {DateTime.Now}",
+                    Subject = $"Запуск із {host}",
+                    To = "wevabiv500@exitings.com"
+                };
+
+                Console.WriteLine($"Запуск із {host}");
+
+                await smtpService.SendEmailAsync(msg);
+
+                await next.Invoke();
+            }
+            );
         }
     }
 }
