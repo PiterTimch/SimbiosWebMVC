@@ -36,10 +36,10 @@
 						<td>@item.Name</td>
 						<td style="max-width: 300px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
 							@Html.Raw(
-																item.Description != null
-																? Regex.Replace(item.Description, "<.*?>", "").Substring(0, Math.Min(50, Regex.Replace(item.Description, "<.*?>", "").Length)) + "..."
-																: ""
-																)
+								item.Description != null
+								? Regex.Replace(item.Description, "<.*?>", "").Substring(0, Math.Min(50, Regex.Replace(item.Description, "<.*?>", "").Length)) + "..."
+								: ""
+							)
 						</td>
 
 						<td>@item.CategoryName</td>

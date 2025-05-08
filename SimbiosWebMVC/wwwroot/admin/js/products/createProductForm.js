@@ -9,8 +9,75 @@
         selector: '#description',
         plugins: 'advlist autolink link image lists charmap preview anchor pagebreak searchreplace wordcount code fullscreen insertdatetime media table help',
         toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | preview fullscreen',
-        menubar: 'file edit view insert format tools table help'
+        menubar: 'file edit view insert format tools table help',
+
+        images_upload_handler: async function (blobInfo, success, failure) {
+            const base64 = blobInfo.base64();
+
+            try {
+                const response = await axios.post('/Admin/ImageFiles/SaveImage', JSON.stringify(base64), {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                return response.data;
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                failure('Помилка завантаження зображення');
+            }
+        },
+
+
+        paste_preprocess: function (plugin, args) {
+            let content = args.content.trim();
+            const urlRegex = /<img[^>]*?src=["']([^"']+)["'][^>]*?>/gi;
+
+            const matches = [...content.matchAll(urlRegex)];
+            const urls = Array.from(new Set(matches.map(match => match[1]).filter(Boolean)));
+            const imageRegex = /\.(jpeg|jpg|png|gif|bmp|webp|svg)(\?.*)?$/i;
+
+            if (urls.length === 0) return;
+
+            const editor = tinymce.activeEditor;
+
+            if (!editor) {
+                console.warn('TinyMCE editor not found.');
+                return;
+            }
+
+            const uploadPromises = urls
+                .filter(url => imageRegex.test(url))
+                .map(url => {
+                    return axios.head(url)
+                        .then(response => {
+                            const contentType = response.headers['content-type'];
+                            if (contentType.startsWith('image/')) {
+                                return axios.post('/Admin/ImageFiles/SaveImage', JSON.stringify(url), {
+                                    headers: { 'Content-Type': 'application/json' }
+                                }).then(res => ({ originalUrl: url, newUrl: res.data }));
+                            }
+                        })
+                        .catch(() => null);
+                });
+
+            Promise.all(uploadPromises).then(results => {
+                const updates = results.filter(Boolean);
+
+                if (updates.length > 0) {
+                    updates.forEach(({ originalUrl, newUrl }) => {
+                        const images = editor.dom.select(`img[src="${originalUrl}"]`);
+                        images.forEach(img => {
+                            editor.dom.setAttrib(img, 'src', newUrl);
+                        });
+                    });
+                }
+            }).catch(error => {
+                console.warn('Error processing images:', error);
+            });
+        }
+
     });
+
 
     new Sortable(document.getElementById('imageList'), {
         animation: 150,
