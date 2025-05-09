@@ -147,14 +147,45 @@ namespace SimbiosWebMVC.Controllers
         [HttpGet]
         public async Task<IActionResult> ResetPassword(string email, string token) 
         {
-            //var user = await userManager.FindByEmailAsync(email);
-            //var result = await userManager.ResetPasswordAsync();
-
-            return View();
+            return View(new ResetPasswordViewModel { Email = email, Token = token });
         }
 
         [HttpPost]
-        public IActionResult ResetPassword(ResetPasswordViewModel model)
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await userManager.FindByEmailAsync(model.Email);
+
+            if (user == null)
+            {
+                ModelState.AddModelError("" ,"Користувача з такою поштою не існує");
+                return View(model);
+            }
+
+            var result = userManager.ResetPasswordAsync(user, model.Token, model.Password);
+
+            if (!result.Result.Succeeded)
+            {
+                ModelState.AddModelError("", "Помилка скидання паролю");
+                return View(model);
+            }
+
+            Message succeedMessage = new Message
+            {
+                Body = $"Пароль успішно скинуто",
+                Subject = $"Скидання паролю",
+                To = model.Email
+            };
+
+            return RedirectToAction(nameof(SucceedResetPassword));
+        }
+
+        [HttpGet]
+        public IActionResult SucceedResetPassword() 
         {
             return View();
         }
