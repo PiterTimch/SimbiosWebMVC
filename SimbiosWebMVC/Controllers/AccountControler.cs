@@ -120,10 +120,43 @@ namespace SimbiosWebMVC.Controllers
 
             var resultUrl = Url.Action("ResetPassword", "Account", new { email = model.Email, token = token }, Request.Scheme);
 
+            string emailBody = @"
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset='UTF-8'>
+                <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+                <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                <style>
+                    body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }
+                    .email-container { background-color: #ffffff; padding: 20px; border-radius: 8px; max-width: 600px; margin: auto; border: 1px solid #dddddd; }
+                    .btn { background-color: #0d6efd; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 4px; display: inline-block; }
+                    .btn:hover { background-color: #0b5ed7; }
+                    .footer { margin-top: 20px; font-size: 12px; color: #666666; }
+                </style>
+            </head>
+            <body>
+                <table class='email-container'>
+                    <tr>
+                        <td style='text-align: center;'>
+                            <h2>Скидання паролю</h2>
+                            <p style='margin: 10px'>Ви отримали цей лист, тому що ми отримали запит на скидання паролю для вашого облікового запису.</p>
+                            <a href='{resultUrl}' class='btn'>Скинути пароль</a>
+                            <p style='margin: 10px'> Якщо ви не надсилали цей запит, просто ігноруйте цей лист.</p>
+                            <p class='footer'>© 2025 Категорік. Усі права захищено.</p>
+                        </td>
+                    </tr>
+                </table>
+            </body>
+            </html>
+            ";
+
+            emailBody = emailBody.Replace("{resultUrl}", resultUrl);
+
             Message msg = new Message
             {
-                Body = $"Перейди і ресетни пароль <a href='{resultUrl}'>Скинути</a>",
-                Subject = $"Скидання паролю",
+                Body = emailBody,
+                Subject = "Скидання паролю",
                 To = model.Email
             };
 
@@ -163,6 +196,13 @@ namespace SimbiosWebMVC.Controllers
             if (user == null)
             {
                 ModelState.AddModelError("" ,"Користувача з такою поштою не існує");
+                return View(model);
+            }
+
+            bool isCurrentPassword = await userManager.CheckPasswordAsync(user, model.Password);
+            if (isCurrentPassword)
+            {
+                ModelState.AddModelError("", "Новий пароль не може бути таким же, як поточний пароль.");
                 return View(model);
             }
 
