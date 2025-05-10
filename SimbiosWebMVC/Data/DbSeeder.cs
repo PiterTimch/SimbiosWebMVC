@@ -38,10 +38,10 @@ namespace SimbiosWebMVC.Data
                     {
                         var categories = JsonSerializer.Deserialize<List<SeederCategoryModel>>(jsonData);
                         var categoryEntities = mapper.Map<List<CategoryEntity>>(categories);
-
                         foreach (var categoryEntity in categoryEntities)
                         {
-                            categoryEntity.ImageUrl = await imageService.SaveImageFromUrlAsync(categoryEntity.ImageUrl);
+                            categoryEntity.ImageUrl =
+                                await imageService.SaveImageFromUrlAsync(categoryEntity.ImageUrl);
                         }
 
                         await context.AddRangeAsync(categoryEntities);
@@ -56,6 +56,74 @@ namespace SimbiosWebMVC.Data
                 else
                 {
                     Console.WriteLine("Not Found File Categories.json");
+                }
+            }
+
+            if (!context.Products.Any())
+            {
+                var imageService = scope.ServiceProvider.GetRequiredService<IImageService>();
+                var jsonFile = Path.Combine(Directory.GetCurrentDirectory(), "Helpers", "JsonData", "Products.json");
+
+                if (File.Exists(jsonFile))
+                {
+                    var jsonData = await File.ReadAllTextAsync(jsonFile);
+                    try
+                    {
+                        var products = JsonSerializer.Deserialize<List<SeederProductModel>>(jsonData);
+
+                        foreach (var product in products)
+                        {
+                            // Знайти відповідну категорію
+                            var category = await context.Categories
+                                .FirstOrDefaultAsync(c => c.Name == product.CategoryName);
+
+                            if (category == null)
+                            {
+                                Console.WriteLine($"Category '{product.CategoryName}' not found for product '{product.Name}'");
+                                continue;
+                            }
+
+                            var productEntity = new ProductEntity
+                            {
+                                Name = product.Name,
+                                Description = product.Description,
+                                CategoryId = category.Id,
+                                ProductImages = new List<ProductImageEntity>()
+                            };
+
+                            int priority = 0;
+                            try
+                            {
+                                foreach (var imageUrl in product.Images)
+                                {
+
+                                    var savedImageUrl = await imageService.SaveImageFromUrlAsync(imageUrl);
+                                    productEntity.ProductImages.Add(new ProductImageEntity
+                                    {
+                                        Name = savedImageUrl,
+                                        Priotity = priority++
+                                    });
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("-----Error Add {0}------", ex.Message);
+                                continue;
+                            }
+
+                            await context.Products.AddAsync(productEntity);
+                        }
+
+                        await context.SaveChangesAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error Json Parse Product Data: {0}", ex.Message);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Products.json file not found");
                 }
             }
 
@@ -121,82 +189,23 @@ namespace SimbiosWebMVC.Data
                 }
             }
 
-            if (!context.Products.Any())
-            {
-                var imageService = scope.ServiceProvider.GetRequiredService<IImageService>();
-                var jsonFile = Path.Combine(Directory.GetCurrentDirectory(), "Helpers", "JsonData", "Products.json");
-
-                if (File.Exists(jsonFile))
-                {
-                    var jsonData = await File.ReadAllTextAsync(jsonFile);
-                    try
-                    {
-                        var products = JsonSerializer.Deserialize<List<SeederProductModel>>(jsonData);
-
-                        foreach (var product in products)
-                        {
-                            // Знайти відповідну категорію
-                            var category = await context.Categories
-                                .FirstOrDefaultAsync(c => c.Name == product.CategoryName);
-
-                            if (category == null)
-                            {
-                                Console.WriteLine($"Category '{product.CategoryName}' not found for product '{product.Name}'");
-                                continue;
-                            }
-
-                            var productEntity = new ProductEntity
-                            {
-                                Name = product.Name,
-                                Description = product.Description,
-                                CategoryId = category.Id,
-                                ProductImages = new List<ProductImageEntity>()
-                            };
-
-                            int priority = 0;
-                            foreach (var imageUrl in product.Images)
-                            {
-                                var savedImageUrl = await imageService.SaveImageFromUrlAsync(imageUrl);
-                                productEntity.ProductImages.Add(new ProductImageEntity
-                                {
-                                    Name = savedImageUrl,
-                                    Priotity = priority++
-                                });
-                            }
-
-                            await context.Products.AddAsync(productEntity);
-                        }
-
-                        await context.SaveChangesAsync();
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Error Json Parse Product Data: {0}", ex.Message);
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Products.json file not found");
-                }
-            }
-
             //webApplication.Use(async (context, next) =>
             //{
-            //    var host = context.Request.Host;
-            //    Message msg = new Message
+            //    var host = context.Request.Host.Host;
+
+            //    Message msgEmail = new Message
             //    {
-            //        Body = $"Додаток запущено {DateTime.Now}",
-            //        Subject = $"Запуск із {host}",
-            //        To = "wevabiv500@exitings.com"
+            //        Body = $"Додаток успішно запущено {DateTime.Now}",
+            //        Subject = $"Запуск сайту {host}",
+            //        To="novakvova@gmail.com"
             //    };
 
-            //    Console.WriteLine($"Запуск із {host}");
-
-            //    await smtpService.SendEmailAsync(msg);
+            //    await smtpService.SendMessage(msgEmail);
+            //    Console.WriteLine($"---------{host}----------");
 
             //    await next.Invoke();
-            //}
-            //);
+            //});
         }
+
     }
 }
