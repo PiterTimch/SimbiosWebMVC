@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using SimbiosWebMVC.Data.Entities;
 using SimbiosWebMVC.Models.Category;
+using SimbiosWebMVC.Models.Helpers;
 
 namespace SimbiosWebMVC.Mapper
 {
@@ -19,6 +20,8 @@ namespace SimbiosWebMVC.Mapper
                     string.IsNullOrEmpty(x.ImageUrl) ? "/pictures/default.jpg" : $"/images/400_{x.ImageUrl}"))
                 .ForMember(x => x.ImageFile, opt => opt.Ignore())
                 .ReverseMap();
+
+            CreateMap<CategoryEntity, SelectItemViewModel>();
         }
     }
 }

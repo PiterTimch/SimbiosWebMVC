@@ -1,0 +1,29 @@
+﻿@model ProductSearchViewModel
+
+@{
+    var categories = Model.Categories.Select(x => new SelectListItem
+    {
+		Text = x.Name,
+		Value = x.Id.ToString()
+    });
+}
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="mb-3">
+            <label asp-for="CategoryId" class="form-label"></label>
+			@Html.DropDownListFor(m => m.CategoryId, categories, new { @class = "form-select" })
+        </div>
+    </div>
+
+    <div class="col-md-3 d-flex align-items-center justify-content-center">
+        <input type="submit" value="Пошук" class="btn btn-primary" />
+    </div>
+</div>
