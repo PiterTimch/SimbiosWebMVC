@@ -8,7 +8,7 @@
     });
 }
 
-<div class="row">
+<form asp-action="Index" method="get" class="shadow rounded bg-light row mb-3">
     <div class="col-md-3">
         <div class="mb-3">
             <label asp-for="Name" class="form-label"></label>
@@ -19,11 +19,19 @@
     <div class="col-md-3">
         <div class="mb-3">
             <label asp-for="CategoryId" class="form-label"></label>
-			@Html.DropDownListFor(m => m.CategoryId, categories, new { @class = "form-select" })
+            @Html.DropDownListFor(m => m.CategoryId, categories, new { @class = "form-select" })
         </div>
     </div>
 
-    <div class="col-md-3 d-flex align-items-center justify-content-center">
-        <input type="submit" value="Пошук" class="btn btn-primary" />
+    <div class="col-md-3">
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label"></label>
+            <input asp-for="Description" class="form-control" />
+        </div>
     </div>
-</div>
+
+    <div class="col-md-3 d-flex align-items-center justify-content-center gap-3">
+        <input type="submit" value="Пошук" class="btn btn-primary" />
+        <input type="reset" value="Очистити" class="btn btn-light" />
+    </div>
+</form>

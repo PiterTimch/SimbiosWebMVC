@@ -11,10 +11,11 @@ namespace SimbiosWebMVC.Controllers
     public class ProductsController(AppDbContext context,
     IMapper mapper) : Controller
     {
-        public async Task<IActionResult> Index()
+        [HttpGet]
+        public async Task<IActionResult> Index(ProductSearchViewModel searchModel)
         {
             ViewBag.Title = "Продукти";
-            var searchModel = new ProductSearchViewModel();
+            searchModel = new ProductSearchViewModel();
 
             searchModel.Categories = await mapper
                 .ProjectTo<SelectItemViewModel>(context.Categories)
@@ -28,8 +29,12 @@ namespace SimbiosWebMVC.Controllers
                 Name = "Всі категорії"
             });
 
-            model.Products = mapper.ProjectTo<ProductItemViewModel>(context.Products).ToList();
+            var query = context.Products.AsQueryable();
+
+            model.Products = mapper.ProjectTo<ProductItemViewModel>(query).ToList();
             model.Search = searchModel;
+
+            model.Count = query.Count();
 
             return View(model);
         }

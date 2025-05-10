@@ -4,5 +4,6 @@
     {
         public List<ProductItemViewModel> Products { get; set; } = new();
         public ProductSearchViewModel Search { get; set; } = new();
+        public int Count { get; set; }
     }
 }
