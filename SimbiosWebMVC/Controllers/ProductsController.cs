@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SimbiosWebMVC.Data;
@@ -8,19 +9,16 @@ using System.Threading.Tasks;
 
 namespace SimbiosWebMVC.Controllers
 {
-    public class ProductsController(AppDbContext context,
-    IMapper mapper) : Controller
+    public class ProductsController(AppDbContext context, IMapper mapper) : Controller
     {
         [HttpGet]
-        public async Task<IActionResult> Index(ProductSearchViewModel searchModel)
+        public async Task<IActionResult> Index(ProductSearchViewModel searchModel, int page = 1)
         {
             ViewBag.Title = "Продукти";
 
             searchModel.Categories = await mapper
                 .ProjectTo<SelectItemViewModel>(context.Categories)
                 .ToListAsync();
-
-            var model = new ProductListViewModel();
 
             searchModel.Categories.Insert(0, new SelectItemViewModel
             {
@@ -32,25 +30,47 @@ namespace SimbiosWebMVC.Controllers
 
             if (!string.IsNullOrEmpty(searchModel.Name))
             {
-                string textSearch = searchModel.Name.Trim();
-                query = query.Where(p => p.Name.ToLower().Contains(textSearch.ToLower()));
+                string textSearch = searchModel.Name.Trim().ToLower();
+                query = query.Where(p => p.Name.ToLower().Contains(textSearch));
             }
 
             if (!string.IsNullOrEmpty(searchModel.Description))
             {
-                string textSearch = searchModel.Description.Trim();
-                query = query.Where(p => p.Description.ToLower().Contains(textSearch.ToLower()));
+                string textSearch = searchModel.Description.Trim().ToLower();
+                query = query.Where(p => p.Description.ToLower().Contains(textSearch));
             }
 
             if (searchModel.CategoryId != 0)
             {
-                query = query.Where(p => p.CategoryId==searchModel.CategoryId);
+                query = query.Where(p => p.CategoryId == searchModel.CategoryId);
             }
 
-            model.Products = mapper.ProjectTo<ProductItemViewModel>(query).ToList();
-            model.Search = searchModel;
+            int itemsPerPage = searchModel.ItemsPerPage > 0 ? searchModel.ItemsPerPage : 10;
+            int totalItems = await query.CountAsync();
+            int totalPages = (int)Math.Ceiling((double)totalItems / itemsPerPage);
 
-            model.Count = query.Count();
+            // Обмежуємо значення сторінки
+            page = page < 1 ? 1 : page;
+            page = page > totalPages ? totalPages : page;
+
+            var products = await query
+                .Skip((page - 1) * itemsPerPage)
+                .Take(itemsPerPage)
+                .ProjectTo<ProductItemViewModel>(mapper.ConfigurationProvider)
+                .ToListAsync();
+
+            var model = new ProductListViewModel
+            {
+                Products = products,
+                Search = searchModel,
+                Count = totalItems,
+                Pagination = new PaginationViewModel
+                {
+                    TotalItems = totalItems,
+                    CurrentPage = page,
+                    ItemsPerPage = itemsPerPage
+                }
+            };
 
             return View(model);
         }
