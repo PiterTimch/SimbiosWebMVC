@@ -14,7 +14,7 @@
                 @for (int i = 1; i <= Model.TotalPages; i++)
                 {
                     <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
-                        <button type="button" class="page-link d-flex align-items-center justify-content-center p-0" style="width: 35px; height: 35px;">@i</button>
+                        <button type="button" onclick="updatePage(@i)" class="page-link d-flex align-items-center justify-content-center p-0" style="width: 35px; height: 35px;">@i</button>
                     </li>
                 }
 
