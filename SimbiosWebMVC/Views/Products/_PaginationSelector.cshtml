@@ -6,18 +6,22 @@
         <nav aria-label="Pagination" class="d-flex justify-content-center my-3">
             <ul class="pagination">
                 <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
-                    <a class="page-link" href="?page=@(Model.CurrentPage - 1)">Попередня</a>
+                    <button type="button" class="page-link" onclick="updatePage(@(Model.CurrentPage - 1))" @(Model.CurrentPage == 1 ? "disabled" : "")>
+                        Попередня
+                    </button>
                 </li>
 
                 @for (int i = 1; i <= Model.TotalPages; i++)
                 {
                     <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
-                        <a class="page-link" href="?page=@i">@i</a>
+                        <button type="button" class="page-link" onclick="updatePage(@i)">@i</button>
                     </li>
                 }
 
                 <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
-                    <a class="page-link" href="?page=@(Model.CurrentPage + 1)">Наступна</a>
+                    <button type="button" class="page-link" onclick="updatePage(@(Model.CurrentPage + 1))" @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")>
+                        Наступна
+                    </button>
                 </li>
             </ul>
         </nav>

@@ -7,7 +7,7 @@
 		Value = x.Id.ToString()
     });
 
-    var itemsPerPage = Model.Elements.Select(x => new SelectListItem
+    var itemsPerPage = Model.Pagination.Elements.Select(x => new SelectListItem
     {
 	    Text = x.ToString(),
 	    Value = x.ToString()
@@ -45,8 +45,10 @@
     
     <div class="row mb-3">
         <div class="col-md-3">
-            <label asp-for="ItemsPerPage" class="form-label"></label>
-            @Html.DropDownListFor(i => i.ItemsPerPage, itemsPerPage, new { @class = "form-select" })
+            <label asp-for="Pagination.ItemsPerPage" class="form-label"></label>
+            @Html.DropDownListFor(i => i.Pagination.ItemsPerPage, itemsPerPage, new { @class = "form-select" })
         </div>
     </div>
+
+    <input asp-for="Pagination.CurrentPage" type="hidden" />
 </form>

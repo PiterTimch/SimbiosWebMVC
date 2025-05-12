@@ -16,9 +16,6 @@ namespace SimbiosWebMVC.Models.Product
 
         public List<SelectItemViewModel> Categories { get; set; } = new();
 
-        [Display(Name="Елементів на сторінці")]
-        public int ItemsPerPage { get; set; } = 5;
-
-        public List<int> Elements { get; set; } = new() { 5, 10, 15, 20 };
+        public PaginationViewModel Pagination { get; set; } = new();
     }
 }

@@ -8,10 +8,22 @@
 	@await Html.PartialAsync("_ProductSearchItem", Model.Search)
 
 	<div class="alert alert-primary mt-2" role="alert">
-		Кількість елементів: <strong>@Model.Count</strong>
+		Кількість елементів: <strong>@Model.Search.Pagination.TotalItems</strong>
 	</div>
 
 	@await Html.PartialAsync("_ListProductItems", Model.Products)
-	@await Html.PartialAsync("_PaginationSelector", Model.Pagination)
+	@await Html.PartialAsync("_PaginationSelector", Model.Search.Pagination)
 </div>
 
+@section Scripts {
+	<script>
+		function updatePage(page) {
+			const pageInput = document.getElementById("Pagination_CurrentPage");
+			if (pageInput) {
+				pageInput.value = page;
+			}
+
+			document.querySelector("form").submit();
+		}
+	</script>
+}

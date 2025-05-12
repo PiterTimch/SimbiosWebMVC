@@ -12,7 +12,7 @@ namespace SimbiosWebMVC.Controllers
     public class ProductsController(AppDbContext context, IMapper mapper) : Controller
     {
         [HttpGet]
-        public async Task<IActionResult> Index(ProductSearchViewModel searchModel, int page = 1)
+        public async Task<IActionResult> Index(ProductSearchViewModel searchModel)
         {
             ViewBag.Title = "Продукти";
 
@@ -45,16 +45,13 @@ namespace SimbiosWebMVC.Controllers
                 query = query.Where(p => p.CategoryId == searchModel.CategoryId);
             }
 
-            int itemsPerPage = searchModel.ItemsPerPage > 0 ? searchModel.ItemsPerPage : 10;
+            int itemsPerPage = searchModel.Pagination.ItemsPerPage;
             int totalItems = await query.CountAsync();
-            int totalPages = (int)Math.Ceiling((double)totalItems / itemsPerPage);
-
-            // Обмежуємо значення сторінки
-            page = page < 1 ? 1 : page;
-            page = page > totalPages ? totalPages : page;
+            searchModel.Pagination.TotalPages = (int)Math.Ceiling((double)totalItems / itemsPerPage);
+            searchModel.Pagination.TotalItems = totalItems;
 
             var products = await query
-                .Skip((page - 1) * itemsPerPage)
+                .Skip((searchModel.Pagination.CurrentPage - 1) * itemsPerPage)
                 .Take(itemsPerPage)
                 .ProjectTo<ProductItemViewModel>(mapper.ConfigurationProvider)
                 .ToListAsync();
@@ -63,13 +60,6 @@ namespace SimbiosWebMVC.Controllers
             {
                 Products = products,
                 Search = searchModel,
-                Count = totalItems,
-                Pagination = new PaginationViewModel
-                {
-                    TotalItems = totalItems,
-                    CurrentPage = page,
-                    ItemsPerPage = itemsPerPage
-                }
             };
 
             return View(model);
