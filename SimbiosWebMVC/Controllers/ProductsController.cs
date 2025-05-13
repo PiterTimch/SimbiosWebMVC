@@ -50,7 +50,7 @@ namespace SimbiosWebMVC.Controllers
             searchModel.Pagination.TotalPages = (int)Math.Ceiling((double)totalItems / itemsPerPage);
             searchModel.Pagination.TotalItems = totalItems;
 
-            searchModel.Pagination.CurrentPage = Math.Clamp(searchModel.Pagination.CurrentPage, 1, searchModel.Pagination.TotalPages);
+            searchModel.Pagination.CurrentPage = Math.Clamp(searchModel.Pagination.CurrentPage, 0, searchModel.Pagination.TotalPages);
 
             if (totalItems <= itemsPerPage)
                 searchModel.Pagination.CurrentPage = 1;
