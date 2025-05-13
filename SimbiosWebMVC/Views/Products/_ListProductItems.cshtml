@@ -1,32 +1,39 @@
 ﻿@model IEnumerable<ProductItemViewModel>
 @using System.Text.RegularExpressions
 
-<div class="row row-cols-1 row-cols-md-3 g-4">
-    @foreach (var item in Model)
-    {
-        var modalId = $"confirmDeleteModal_{item.Id}";
-        string image = item.Images[0];
+@if (!Model.Any())
+{
+    <div class="alert alert-warning text-center mt-4">
+        <i class="fa-solid fa-circle-exclamation me-2"></i> Немає доступних елементів.
+    </div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var item in Model)
+        {
+            var modalId = $"confirmDeleteModal_{item.Id}";
+            string image = item.Images[0];
 
-        <div class="col">
-            <div class="card h-100 shadow-sm position-relative">
-                <img src="/images/400_@image" class="card-img-top" alt="@item.Name" style="height: 200px; object-fit: cover;">
-                <div class="card-body">
-                    <h5 class="card-title">@item.Name (<i>@item.CategoryName</i>)</h5>
-                    @{
-                        string description = item.Description != null
-                        ? Regex.Replace(item.Description, "<.*?>", "")
-                        : "";
+            <div class="col">
+                <div class="card h-100 shadow-sm position-relative">
+                    <img src="/images/400_@image" class="card-img-top" alt="@item.Name" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Name (<i>@item.CategoryName</i>)</h5>
+                        @{
+                            string description = item.Description != null
+                            ? Regex.Replace(item.Description, "<.*?>", "")
+                            : "";
 
-                        string shortDescription = description.Length > 50
-                        ? description.Substring(0, 50) + "..."
-                        : description;
-                    }
+                            string shortDescription = description.Length > 50
+                            ? description.Substring(0, 50) + "..."
+                            : description;
+                        }
 
-                    <p class="card-text">@shortDescription</p>
-
+                        <p class="card-text">@shortDescription</p>
+                    </div>
                 </div>
-
             </div>
-        </div>
-    }
-</div>
+        }
+    </div>
+}
